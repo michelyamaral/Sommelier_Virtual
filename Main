@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <conio.h>
+#include <string.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <math.h>
+struct base {
+	int carne;
+	int peso;
+	int sabor;
+}dados;
+
+int distancia (int l, int m[][3], struct base d){
+	int resultado;
+	int i, indicador, menor=9999999;
+	for (i=0;i<l;i++){
+		resultado = sqrt (1*(pow (m[i][0]-d.carne,2))) + (5*(pow (m[i][1]-d.peso,2))) + (2*(pow (m[i][2]-d.sabor,2)));
+		if (resultado<menor){
+			menor=resultado;
+			indicador = i;
+		}
+	}
+	return indicador;
+}
+
+main (){
+	setlocale(LC_ALL, "Portuguese");
+	int carne, peso, sabor, i,j;
+	int matriz[9][3], id, resp=1, linhas=0,l;
+	char c, vinhos[1000];
+	int cont=0;
+	FILE *arquivo;
+	FILE *arq;
+	while (resp!=0){	
+	arquivo=fopen("dados.txt", "r");
+	while (fread(&c, sizeof(char),1,arquivo)){
+		if (c=='\n'){
+			linhas++;
+		}
+	}
+	printf ("%i", linhas);
+	fclose(arquivo);
+
+	arquivo = fopen("dados.txt", "r");
+	while(!feof(arquivo)){
+        for(i=0;i<linhas;i++){
+            for(j=0;j<3;j++){
+                fscanf(arquivo,"%d",&matriz[i][j]);
+            }
+        }
+    }
+    fclose(arquivo);
+    
+
+	printf ("Informe os dados da refeição:");
+	printf ("\n Opção de carne:  ");
+	printf ("\n 1- Sem Carne \n 2- Carne Branca \n 3- Carne Vermelha \n");
+	scanf ("%i", &carne);
+	system("cls");
+	printf ("Peso da refeição: \n 1-Leve \n 2-Medio \n 3-Pesado \n");
+	scanf ("%i", &peso);
+	system("cls");
+	printf ("Informe o sabor: \n 1-Salgado \n 2-Picante \n 3-Suculento \n 4-Doce \n 5-Acido \n 6-Amargo \n");
+	scanf ("%i", &sabor);
+	system ("cls");
+
+	switch (carne){
+		case 1: dados.carne=1; break;
+		case 2: dados.carne=2; break;
+		case 3: dados.carne=3; break;
+		default: printf ("erro");
+	}
+	switch (peso){
+		case 1: dados.peso =7; break;
+		case 2: dados.peso =8; break;
+		case 3: dados.peso =9; break;
+		default: printf ("erro");
+	}
+	switch (sabor){
+		case 1: dados.sabor =4; break;
+		case 2: dados.sabor =6; break;
+		case 3: dados.sabor =5; break;
+		case 4: dados.sabor =1; break;
+		case 5: dados.sabor =2; break;
+		case 6: dados.sabor =3; break;
+		default: printf ("erro");
+	}
+	
+	id =distancia (linhas, matriz, dados);	
+	
+	arq = fopen ("vinhos.txt", "r");
+	while (fread (&c, sizeof(char), 1, arq)){
+		if (c == '\n'){
+			cont++;							
+			if (cont==id){
+				fgets(vinhos,100,arq);
+				printf("%s", vinhos);
+			}
+		}
+	}
+	fclose(arq);
+	
+	printf ("%s", vinhos);
+	arq = fopen ("vinhos.txt","a");
+	fprintf (arq,"\n%s", vinhos);
+	fclose(arq);
+	arquivo = fopen ("dados.txt", "a");
+	fprintf (arquivo, "\n%i %i %i", dados.carne, dados.peso, dados.sabor);
+	fclose(arquivo);
+	
+	
+	printf("\n Deseja consultar novamente? 0-Não 1-Sim \n");
+	scanf ("%i", &resp);
+}
+}
